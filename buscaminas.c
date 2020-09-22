@@ -4,7 +4,8 @@
 #include <stdbool.h>
 
 #include <math.h>
-#include<time.h>
+#include <time.h>
+#include <ctype.h>
 
 struct Celda{
   int mina;
@@ -13,13 +14,9 @@ struct Celda{
   bool marked;
 }Celda;
 
-//TODO tablero 2x2 y1 mina en 1 1 no identifica que hay
 //TODO tablon de la FAMA y de la miseria
 //TODO interfaz grafica
 //TODO usuario bobo (Error al leer M/D) (Comporbar tipo de lectura)
-//TODO descubrir fila 0 de 0's
-//TODO myusucal m/d
-//TODO barrabaja para linea horizontal
 
 
 void iniciar(int tam, int num_minas, struct Celda tablero[tam][tam]){
@@ -29,11 +26,11 @@ void iniciar(int tam, int num_minas, struct Celda tablero[tam][tam]){
   for(i = 0; i < num_minas; ++i){
     cordx = floor(rand()%tam);
     cordy = floor(rand()%tam);
-    printf("CoordX: %d    CoordY: %d\n", cordx + 1, cordy + 1);
     if(tablero[cordx][cordy].mina == 1){
       i--;
     }
     else{
+      printf("CoordX: %d    CoordY: %d\n", cordx + 1, cordy + 1);
       tablero[cordx][cordy].mina = 1;
     }
   }
@@ -45,10 +42,12 @@ void comprobar(int tam, struct Celda tablero[tam][tam]){
   for(i = 0; i < tam; ++i){
     for(j = 0; j < tam; ++j){
       cont = 0;
-      for(k = -1; k < 2 && (i + k >= 0) && (i + k < tam); k++){
-        for(l = -1; l < 2 && (j + l >= 0) && ( j + l < tam); l++){
-          if(tablero[i + k][j + l].mina == 1){
-            cont++;
+      for(k = -1; k < 2; k++){
+        if((i + k >= 0) && (i + k < tam)){
+          for(l = -1; l < 2; l++){
+            if((j + l >= 0) && ( j + l < tam) && tablero[i + k][j + l].mina == 1){
+              cont++;
+            }
           }
         }
       }
@@ -56,15 +55,16 @@ void comprobar(int tam, struct Celda tablero[tam][tam]){
         cont--;
       }
       tablero[i][j].cerca = cont;
+      printf("Numero de minas en %d, %d: %d\n", i + 1, j + 1, cont);
     }
   }
 }
 
 void imprimir( int tam, struct Celda tablero[tam][tam]){
-  int i, k, j;
+  int i, k, j, z;
 
   printf("     ");
-  for(i = 0; i < tam; i++){
+  for (i = 0; i < tam; i++){
     if(i >= 9){
       printf("%d  ", i + 1);
     }
@@ -73,6 +73,15 @@ void imprimir( int tam, struct Celda tablero[tam][tam]){
     }
   }
   printf("\n");
+  printf("     ");
+  printf("\033[0;35m");
+  for (z = 0; z < tam; z++){
+
+    printf("----");
+  }
+  printf("\n");
+  printf("\033[0m");
+
   for (i = 0; i < tam; i++){
     if(i >= 9){
       printf("%d  ", i + 1);
@@ -152,6 +161,14 @@ void imprimir( int tam, struct Celda tablero[tam][tam]){
     }
     printf("  %d\n", i + 1);
 
+    printf("     ");
+    printf("\033[0;35m");
+    for (z = 0; z < tam; z++){
+
+      printf("----");
+    }
+    printf("\n");
+    printf("\033[0m");
   }
 
   printf("     ");
@@ -184,9 +201,13 @@ void procesar( int tam, int *exp, int fil, int col, struct Celda tablero[tam][ta
         }
       }
       if(tablero[fil][col].cerca == 0){
-        for(k = -1; k < 2 && (fil + k >= 0) && (fil + k < tam) ;k++){
-          for(l = -1; l < 2 && (col + l >= 0) && ( col + l < tam); l++){
-            procesar( tam, exp, fil + k, col + l, tablero, opt);
+        for(k = -1; k < 2;k++){
+          if((fil + k >= 0) && (fil + k < tam)){
+            for(l = -1; l < 2; l++){
+              if((col + l >= 0) && ( col + l < tam)){
+                procesar( tam, exp, fil + k, col + l, tablero, opt);
+              }
+            }
           }
         }
       }
@@ -223,7 +244,7 @@ void main(){
   printf("Introduce el tamaño del tablero(recomendado 16)\n");
   scanf("%d", &tam);
   while (tam <= 0 || tam > 99) {
-    system("clear");
+    //system("clear");
     printf("Introduce un tamaño comprendido entre 1 y 99\n");
     scanf("%d", &tam);
   }
@@ -231,7 +252,7 @@ void main(){
   scanf("%d", &num_minas);
 
   while (num_minas <= 0 || num_minas > tam * tam - 1) {
-    system("clear");
+    //system("clear");
     printf("Introduce un número de minas comprendido entre 1 y %d\n", tam * tam - 1);
     scanf("%d", &num_minas);
   }
@@ -245,18 +266,20 @@ void main(){
   printf("comporbado\n" );
 
   while(!win){
-    system("clear");
+    //system("clear");
     imprimir(tam, tablero);
     printf("¿Qué deseas hacer?\n\t(M) Marcar mina\tMarcadas(%d/%d)\n\t(D) Descubrir casilla\n", marked, num_minas);
 
     scanf("%c", &endofline);
     scanf("%c", &opt);
     scanf("%c", &endofline);
+    opt = toupper(opt);
     while(opt != 'M' && opt != 'D'){
-      system("clear");
+      //system("clear");
       printf("¿Qué deseas hacer?\n\t(M) Marcar mina\n\t(D) Descubrir casilla\n");
       scanf("%c", &opt);
       scanf("%c", &endofline);
+      opt = toupper(opt);
     }
 
     switch(opt){
@@ -281,5 +304,6 @@ void main(){
     if(exp == tam*tam - num_minas) win = true;
   }
 
-printf("ENHORABUENA! HAS GANADO, AHORA %s PASARA AL PABELLON DE LA FAMA\n", name );
+  imprimir(tam, tablero);
+  printf("ENHORABUENA! HAS GANADO, AHORA %s PASARA AL PABELLON DE LA FAMA\n", name );
 }
