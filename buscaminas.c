@@ -16,13 +16,13 @@ struct Celda{
 
 //TODO tablon de la FAMA y de la miseria
 //TODO interfaz grafica
-//TODO usuario bobo (Error al leer M/D) (Comporbar tipo de lectura)
+//Pasar valdgrind
 
 
 void iniciar(int tam, int num_minas, struct Celda tablero[tam][tam]){
   srand (time(NULL));
   int i,cordx,cordy;
-  printf("Posición de las %d minas:\n", num_minas );
+//  printf("Posición de las %d minas:\n", num_minas );
   for(i = 0; i < num_minas; ++i){
     cordx = floor(rand()%tam);
     cordy = floor(rand()%tam);
@@ -30,7 +30,7 @@ void iniciar(int tam, int num_minas, struct Celda tablero[tam][tam]){
       i--;
     }
     else{
-      printf("CoordX: %d    CoordY: %d\n", cordx + 1, cordy + 1);
+    //  printf("CoordX: %d    CoordY: %d\n", cordx + 1, cordy + 1);
       tablero[cordx][cordy].mina = 1;
     }
   }
@@ -55,7 +55,7 @@ void comprobar(int tam, struct Celda tablero[tam][tam]){
         cont--;
       }
       tablero[i][j].cerca = cont;
-      printf("Numero de minas en %d, %d: %d\n", i + 1, j + 1, cont);
+      //printf("Numero de minas en %d, %d: %d\n", i + 1, j + 1, cont);
     }
   }
 }
@@ -229,18 +229,15 @@ void inicializar( int tam, struct Celda tablero[tam][tam]){
   }
 }
 
-void main(){
-  char name[100];
+void jugar(){
+
   int num_minas;
   int tam;
-  char opt, endofline;
+  char opt, men;
   int col, fil;
   int exp = 0, marked = 0;
   bool win = false;
-  printf("BIENVENIDO AL MARAVILLOSO JUEGO DEL BUSCAMINAS\nIntroduzca su nombre: ");
-  scanf("%s", name);
-  printf("Hola %s, dispuesto a jugar el increible juego del buscaminas?\n", name);
-  printf("-------------------------\n" );
+
   printf("Introduce el tamaño del tablero(recomendado 16)\n");
   scanf("%d", &tam);
   while (tam <= 0 || tam > 99) {
@@ -270,15 +267,12 @@ void main(){
     imprimir(tam, tablero);
     printf("¿Qué deseas hacer?\n\t(M) Marcar mina\tMarcadas(%d/%d)\n\t(D) Descubrir casilla\n", marked, num_minas);
 
-    scanf("%c", &endofline);
-    scanf("%c", &opt);
-    scanf("%c", &endofline);
+    scanf(" %c", &opt);
     opt = toupper(opt);
     while(opt != 'M' && opt != 'D'){
       //system("clear");
-      printf("¿Qué deseas hacer?\n\t(M) Marcar mina\n\t(D) Descubrir casilla\n");
-      scanf("%c", &opt);
-      scanf("%c", &endofline);
+      printf("Por favor, introduce un caracter valido\n¿Qué deseas hacer?\n\t(M) Marcar mina\n\t(D) Descubrir casilla\n");
+      scanf(" %c", &opt);
       opt = toupper(opt);
     }
 
@@ -305,5 +299,54 @@ void main(){
   }
 
   imprimir(tam, tablero);
+}
+
+
+void tablon_fama(){}
+
+void tablon_miseria(){}
+
+char menu_principal(){
+  char men;
+  printf("¿Qué deseas hacer?\n\t(J) Jugar\n\t(F) Ver el tablón de la fama\n\t(M) Ver el tablón de la miseria\n");
+
+  scanf(" %c", &men);
+  men = toupper(men);
+  while(men != 'J' && men != 'F' && men != 'M'){
+    //system("clear");
+    printf("Por favor, introduce un caracter valido\n¿Qué deseas hacer?\n\t(J) Jugar\n\t(F) Ver el tablón de la fama\n\t(M) Ver el tablón de la miseria\n");
+    scanf(" %c", &men);
+    men = toupper(men);
+  }
+  return men;
+}
+
+
+void main(){
+  char name[100];
+  char men;
+  printf("BIENVENIDO AL MARAVILLOSO JUEGO DEL BUSCAMINAS\nIntroduzca su nombre: ");
+  scanf("%s", name);
+  printf("Hola %s, dispuesto a jugar el increible juego del buscaminas?\n", name);
+  printf("-------------------------\n" );
+
+  men = menu_principal();
+  while(men != 'J'){
+    switch(men){
+      case 'M':
+        tablon_miseria();
+        men = menu_principal();
+        break;
+      case 'F':
+        tablon_fama();
+        men = menu_principal();
+        break;
+      }
+  }
+
+  jugar();
+
   printf("ENHORABUENA! HAS GANADO, AHORA %s PASARA AL PABELLON DE LA FAMA\n", name );
+
+  return;
 }
