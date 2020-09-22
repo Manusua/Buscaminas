@@ -13,6 +13,15 @@ struct Celda{
   bool marked;
 }Celda;
 
+//TODO tablero 2x2 y1 mina en 1 1 no identifica que hay
+//TODO tablon de la FAMA y de la miseria
+//TODO interfaz grafica
+//TODO usuario bobo (Error al leer M/D) (Comporbar tipo de lectura)
+//TODO descubrir fila 0 de 0's
+//TODO myusucal m/d
+//TODO barrabaja para linea horizontal
+
+
 void iniciar(int tam, int num_minas, struct Celda tablero[tam][tam]){
   srand (time(NULL));
   int i,cordx,cordy;
@@ -36,7 +45,7 @@ void comprobar(int tam, struct Celda tablero[tam][tam]){
   for(i = 0; i < tam; ++i){
     for(j = 0; j < tam; ++j){
       cont = 0;
-      for(k = -1; k < 2 && (i + k >= 0) && (i + k < tam) ;k++){
+      for(k = -1; k < 2 && (i + k >= 0) && (i + k < tam); k++){
         for(l = -1; l < 2 && (j + l >= 0) && ( j + l < tam); l++){
           if(tablero[i + k][j + l].mina == 1){
             cont++;
@@ -84,8 +93,44 @@ void imprimir( int tam, struct Celda tablero[tam][tam]){
           printf("\033[0m");
         }
         else{*/
-          printf("\033[0;36m");
-          printf(" %d ", tablero[i][j].cerca );
+          switch (tablero[i][j].cerca) {
+            case 0:
+              printf("\033[0;36m");
+              printf("   ");
+              break;
+            case 1:
+              printf("\033[1;36m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 2:
+              printf("\033[1;34m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 3:
+              printf("\033[0;34m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 4:
+              printf("\033[0;35m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 5:
+              printf("\033[1;35m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 6:
+              printf("\033[0;31m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 7:
+              printf("\033[1;31m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+            case 8:
+              printf("\033[0;33m");
+              printf(" %d ", tablero[i][j].cerca );
+              break;
+          }
           printf("\033[0;35m");
           printf("|");
           printf("\033[0m");
@@ -208,6 +253,7 @@ void main(){
     scanf("%c", &opt);
     scanf("%c", &endofline);
     while(opt != 'M' && opt != 'D'){
+      system("clear");
       printf("¿Qué deseas hacer?\n\t(M) Marcar mina\n\t(D) Descubrir casilla\n");
       scanf("%c", &opt);
       scanf("%c", &endofline);
